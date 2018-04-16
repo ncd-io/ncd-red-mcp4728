@@ -42,6 +42,11 @@ module.exports = class MCP4725{
 			eeprom_gx_4: 0,
 			eeprom_dac_4: 2048
 		}, config);
+		for(var i=1;i<5;i++){
+			if(this.config["eeprom_persist_"+i]) this.config.startup = false;
+			if(this.config["vr_"+i]) this.config["gx_"+i] = 0;
+			if(this.config["eeprom_vr_"+i]) this.config["eeprom_gx_"+i] = 0;
+		}
 		this.comm = comm;
 		this.addr = addr;
 		this.initialized = false;

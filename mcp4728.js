@@ -16,22 +16,16 @@ module.exports = function(RED){
 
 	function NcdI2cDeviceNode(config){
 		RED.nodes.createNode(this, config);
-		this.interval = parseInt(config.interval);
 		this.addr = parseInt(config.addr);
 		if(typeof sensor_pool[this.id] != 'undefined'){
 			//Redeployment
-			clearTimeout(sensor_pool[this.id].timeout);
 			delete(sensor_pool[this.id]);
 		}
 
 		this.sensor = new MCP4728(this.addr, RED.nodes.getNode(config.connection).i2c, config);
 		sensor_pool[this.id] = {
 			sensor: this.sensor,
-			timeout: 0,
 			node: this
-		}
-		if(config.persist){
-			this.settings = comm.NcdSettings(config, this.context().global);
 		}
 		var node = this;
 		var last_status = false;

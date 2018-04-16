@@ -1,6 +1,6 @@
 {
     "name": "ncd-red-mcp4728",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
@@ -20,7 +20,7 @@
     "license": "MIT",
     "node-red": {
         "nodes": {
-            "ncd-mcp4725": "mcp4728.js"
+            "ncd-mcp4728": "mcp4728.js"
         }
     },
     "dependencies": {
