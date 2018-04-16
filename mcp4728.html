@@ -1,0 +1,394 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ncd-mcp4728',{
+        category: 'NCD',
+        color: '#a6bbcf',
+        defaults: {
+            name: {value: ""},
+			connection: {value: "", type: "ncd-comm"},
+			addr: {value: "96"},
+			output_all: {value: ""},
+
+			vr_1: {value: 1, validate: RED.validators.number()},
+			pd_1: {value: 0, validate: RED.validators.number()},
+			gx_1: {value: 0, validate: RED.validators.number()},
+
+			eeprom_persist_1: {value: ""},
+			eeprom_startup_1: {value: ""},
+			eeprom_vr_1: {value: 1, validate: RED.validators.number()},
+			eeprom_pd_1: {value: 0, validate: RED.validators.number()},
+			eeprom_gx_1: {value: 0, validate: RED.validators.number()},
+			eeprom_dac_1: {value: 2048, validate: RED.validators.number()},
+
+			vr_2: {value: 1, validate: RED.validators.number()},
+			pd_2: {value: 0, validate: RED.validators.number()},
+			gx_2: {value: 0, validate: RED.validators.number()},
+
+			eeprom_persist_2: {value: ""},
+			eeprom_startup_2: {value: ""},
+			eeprom_vr_2: {value: 1, validate: RED.validators.number()},
+			eeprom_pd_2: {value: 0, validate: RED.validators.number()},
+			eeprom_gx_2: {value: 0, validate: RED.validators.number()},
+			eeprom_dac_2: {value: 2048, validate: RED.validators.number()},
+
+			vr_3: {value: 1, validate: RED.validators.number()},
+			pd_3: {value: 0, validate: RED.validators.number()},
+			gx_3: {value: 0, validate: RED.validators.number()},
+
+			eeprom_persist_3: {value: ""},
+			eeprom_startup_3: {value: ""},
+			eeprom_vr_3: {value: 1, validate: RED.validators.number()},
+			eeprom_pd_3: {value: 0, validate: RED.validators.number()},
+			eeprom_gx_3: {value: 0, validate: RED.validators.number()},
+			eeprom_dac_3: {value: 2048, validate: RED.validators.number()},
+
+			vr_4: {value: 1, validate: RED.validators.number()},
+			pd_4: {value: 0, validate: RED.validators.number()},
+			gx_4: {value: 0, validate: RED.validators.number()},
+
+			eeprom_persist_4: {value: ""},
+			eeprom_startup_4: {value: ""},
+			eeprom_vr_4: {value: 1, validate: RED.validators.number()},
+			eeprom_pd_4: {value: 0, validate: RED.validators.number()},
+			eeprom_gx_4: {value: 0, validate: RED.validators.number()},
+			eeprom_dac_4: {value: 2048, validate: RED.validators.number()},
+        },
+        inputs:1,
+        outputs:1,
+		icon: "serial.png",
+        label: function() {
+            return this.name || "MCP4728";
+        },
+		outputLabels: function(i){
+			if(!this.output_all || i == 5) return 'Device Status';
+			return 'Channel '+(i+1);
+		},
+		oneditprepare: function() {
+			$('[type=checkbox]').change(function(){
+				if($(this).is(':checked')){
+					$('[data-ischecked='+$(this).attr('id')+']').show();
+					$('[data-notchecked='+$(this).attr('id')+']').hide();
+				}else{
+					$('[data-ischecked='+$(this).attr('id')+']').hide();
+					$('[data-notchecked='+$(this).attr('id')+']').show();
+				}
+			});
+		},
+		oneditsave: function(){
+			this.outputs = $('#node-input-output_all').is(':checked') ? 5 : 1;
+		}
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ncd-mcp4728">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+	<div class="form-row">
+        <label for="node-input-connection"><i class="icon-tag"></i> I2C Connection</label>
+        <select id="node-input-connection"></select>
+    </div>
+	<div class="form-row">
+        <label for="node-input-addr"><i class="icon-tag"></i> Device Address</label>
+        <select id="node-input-addr">
+			<option value="96">96</option>
+			<option value="97">97</option>
+		</select>
+    </div>
+	<div class="form-row">
+		<label for="node-input-output_all"><i class="icon-tag"></i> Output all channels</label>
+		<input type="checkbox" id="node-input-output_all" value="1">
+	</div>
+
+	<h5>Channel 1 Settings</h5>
+	<div class="form-row">
+		<label for="node-input-vr_1"><i class="icon-tag"></i> Internal Voltage Ref</label>
+		<input type="checkbox" id="node-input-vr_1" checked="checked" value="1">
+	</div>
+	<div class="form-row">
+		<label for="node-input-pd_1"><i class="icon-tag"></i> Power Down Mode</label>
+		<select id="node-input-pd_1">
+			<option value="0">Normal Mode</option>
+			<option value="1">Power Down (1k resistor)</option>
+			<option value="2">Power Down (100k resistor)</option>
+			<option value="3">Power Down (500k resistor)</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-gx_1"><i class="icon-tag"></i> Gain</label>
+		<select id="node-input-gx_1">
+			<option value="0">Gain 1x</option>
+			<option value="1">Gain 2x</option>
+		</select>
+	</div>
+	<h6>EEPROM Settings</h6>
+	<div class="form-row">
+		<label for="node-input-eeprom_persist_1"><i class="icon-tag"></i> Persistent State*</label>
+		<input type="checkbox" id="node-input-eeprom_persist_1" value="1"><br/>
+		<span><b>* Use this with care, see note in info tab.</b></span>
+	</div>
+	<div data-notchecked="node-input-eeprom_persist_1">
+		<div class="form-row">
+			<label for="node-input-eeprom_startup_1"><i class="icon-tag"></i> Startup State</label>
+			<input type="checkbox" id="node-input-eeprom_startup_1" value="1">
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_1">
+			<label for="node-input-eeprom_vr_1"><i class="icon-tag"></i> Internal Voltage Ref</label>
+			<input type="checkbox" id="node-input-eeprom_vr_1" checked="checked" value="1">
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_1">
+	        <label for="node-input-eeprom_pd_1"><i class="icon-tag"></i> Power Down Mode</label>
+	        <select id="node-input-eeprom_pd_1">
+				<option value="0">Normal Mode</option>
+				<option value="1">Power Down (1k resistor)</option>
+				<option value="2">Power Down (100k resistor)</option>
+				<option value="3">Power Down (500k resistor)</option>
+			</select>
+	    </div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_1">
+			<label for="node-input-eeprom_gx_1"><i class="icon-tag"></i> Gain</label>
+			<select id="node-input-eeprom_gx_1">
+				<option value="0">Normal Mode</option>
+				<option value="1">Power Down (1k resistor)</option>
+			</select>
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_1">
+			<label for="node-input-eeprom_dac_1"><i class="icon-tag"></i> DAC Value (0-4095)</label>
+			<input type="text" id="node-input-eeprom_dac_1">
+		</div>
+	</div>
+
+	<h5>Channel 2 Settings</h5>
+	<div class="form-row">
+		<label for="node-input-vr_2"><i class="icon-tag"></i> Internal Voltage Ref</label>
+		<input type="checkbox" id="node-input-vr_2" checked="checked" value="1">
+	</div>
+	<div class="form-row">
+		<label for="node-input-pd_2"><i class="icon-tag"></i> Power Down Mode</label>
+		<select id="node-input-pd_2">
+			<option value="0">Normal Mode</option>
+			<option value="1">Power Down (1k resistor)</option>
+			<option value="2">Power Down (100k resistor)</option>
+			<option value="3">Power Down (500k resistor)</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-gx_2"><i class="icon-tag"></i> Gain</label>
+		<select id="node-input-gx_2">
+			<option value="0">Gain 1x</option>
+			<option value="1">Gain 2x</option>
+		</select>
+	</div>
+
+	<h6>EEPROM Settings</h6>
+	<div class="form-row">
+		<label for="node-input-eeprom_persist_2"><i class="icon-tag"></i> Persistent State*</label>
+		<input type="checkbox" id="node-input-eeprom_persist_2" value="1"><br/>
+		<span><b>* Use this with care, see note in info tab.</b></span>
+	</div>
+	<div data-notchecked="node-input-eeprom_persist_2">
+		<div class="form-row">
+			<label for="node-input-eeprom_startup_2"><i class="icon-tag"></i> Startup State</label>
+			<input type="checkbox" id="node-input-eeprom_startup_2" value="1">
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_2">
+			<label for="node-input-eeprom_vr_2"><i class="icon-tag"></i> Internal Voltage Ref</label>
+			<input type="checkbox" id="node-input-eeprom_vr_2" checked="checked" value="1">
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_2">
+	        <label for="node-input-eeprom_pd_2"><i class="icon-tag"></i> Power Down Mode</label>
+	        <select id="node-input-eeprom_pd_2">
+				<option value="0">Normal Mode</option>
+				<option value="1">Power Down (1k resistor)</option>
+				<option value="2">Power Down (100k resistor)</option>
+				<option value="3">Power Down (500k resistor)</option>
+			</select>
+	    </div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_2">
+			<label for="node-input-eeprom_gx_2"><i class="icon-tag"></i> Gain</label>
+			<select id="node-input-eeprom_gx_2">
+				<option value="0">Normal Mode</option>
+				<option value="1">Power Down (1k resistor)</option>
+			</select>
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_2">
+			<label for="node-input-eeprom_dac_2"><i class="icon-tag"></i> DAC Value (0-4095)</label>
+			<input type="text" id="node-input-eeprom_dac_2">
+		</div>
+	</div>
+
+	<h5>Channel 3 Settings</h5>
+	<div class="form-row">
+		<label for="node-input-vr_3"><i class="icon-tag"></i> Internal Voltage Ref</label>
+		<input type="checkbox" id="node-input-vr_3" checked="checked" value="1">
+	</div>
+	<div class="form-row">
+		<label for="node-input-pd_3"><i class="icon-tag"></i> Power Down Mode</label>
+		<select id="node-input-pd_3">
+			<option value="0">Normal Mode</option>
+			<option value="1">Power Down (1k resistor)</option>
+			<option value="2">Power Down (100k resistor)</option>
+			<option value="3">Power Down (500k resistor)</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-gx_3"><i class="icon-tag"></i> Gain</label>
+		<select id="node-input-gx_3">
+			<option value="0">Gain 1x</option>
+			<option value="1">Gain 2x</option>
+		</select>
+	</div>
+
+	<h6>EEPROM Settings</h6>
+	<div class="form-row">
+		<label for="node-input-eeprom_persist_3"><i class="icon-tag"></i> Persistent State*</label>
+		<input type="checkbox" id="node-input-eeprom_persist_3" value="1"><br/>
+		<span><b>* Use this with care, see note in info tab.</b></span>
+	</div>
+	<div data-notchecked="node-input-eeprom_persist_3">
+		<div class="form-row">
+			<label for="node-input-eeprom_startup_3"><i class="icon-tag"></i> Startup State</label>
+			<input type="checkbox" id="node-input-eeprom_startup_3" value="1">
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_3">
+			<label for="node-input-eeprom_vr_3"><i class="icon-tag"></i> Internal Voltage Ref</label>
+			<input type="checkbox" id="node-input-eeprom_vr_3" checked="checked" value="1">
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_3">
+	        <label for="node-input-eeprom_pd_3"><i class="icon-tag"></i> Power Down Mode</label>
+	        <select id="node-input-eeprom_pd_3">
+				<option value="0">Normal Mode</option>
+				<option value="1">Power Down (1k resistor)</option>
+				<option value="2">Power Down (100k resistor)</option>
+				<option value="3">Power Down (500k resistor)</option>
+			</select>
+	    </div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_3">
+			<label for="node-input-eeprom_gx_3"><i class="icon-tag"></i> Gain</label>
+			<select id="node-input-eeprom_gx_3">
+				<option value="0">Normal Mode</option>
+				<option value="1">Power Down (1k resistor)</option>
+			</select>
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_3">
+			<label for="node-input-eeprom_dac_3"><i class="icon-tag"></i> DAC Value (0-4095)</label>
+			<input type="text" id="node-input-eeprom_dac_3">
+		</div>
+	</div>
+
+	<h5>Channel 4 Settings</h5>
+	<div class="form-row">
+		<label for="node-input-vr_4"><i class="icon-tag"></i> Internal Voltage Ref</label>
+		<input type="checkbox" id="node-input-vr_4" checked="checked" value="1">
+	</div>
+	<div class="form-row">
+		<label for="node-input-pd_4"><i class="icon-tag"></i> Power Down Mode</label>
+		<select id="node-input-pd_4">
+			<option value="0">Normal Mode</option>
+			<option value="1">Power Down (1k resistor)</option>
+			<option value="2">Power Down (100k resistor)</option>
+			<option value="3">Power Down (500k resistor)</option>
+		</select>
+	</div>
+	<div class="form-row">
+		<label for="node-input-gx_4"><i class="icon-tag"></i> Gain</label>
+		<select id="node-input-gx_4">
+			<option value="0">Gain 1x</option>
+			<option value="1">Gain 2x</option>
+		</select>
+	</div>
+
+	<h6>EEPROM Settings</h6>
+	<div class="form-row">
+		<label for="node-input-eeprom_persist_4"><i class="icon-tag"></i> Persistent State*</label>
+		<input type="checkbox" id="node-input-eeprom_persist_4" value="1"><br/>
+		<span><b>* Use this with care, see note in info tab.</b></span>
+	</div>
+	<div data-notchecked="node-input-eeprom_persist_4">
+		<div class="form-row">
+			<label for="node-input-eeprom_startup_4"><i class="icon-tag"></i> Startup State</label>
+			<input type="checkbox" id="node-input-eeprom_startup_4" value="1">
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_4">
+			<label for="node-input-eeprom_vr_4"><i class="icon-tag"></i> Internal Voltage Ref</label>
+			<input type="checkbox" id="node-input-eeprom_vr_4" checked="checked" value="1">
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_4">
+	        <label for="node-input-eeprom_pd_4"><i class="icon-tag"></i> Power Down Mode</label>
+	        <select id="node-input-eeprom_pd_4">
+				<option value="0">Normal Mode</option>
+				<option value="1">Power Down (1k resistor)</option>
+				<option value="2">Power Down (100k resistor)</option>
+				<option value="3">Power Down (500k resistor)</option>
+			</select>
+	    </div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_4">
+			<label for="node-input-eeprom_gx_4"><i class="icon-tag"></i> Gain</label>
+			<select id="node-input-eeprom_gx_4">
+				<option value="0">Normal Mode</option>
+				<option value="1">Power Down (1k resistor)</option>
+			</select>
+		</div>
+		<div class="form-row" data-ischecked="node-input-eeprom_startup_4">
+			<label for="node-input-eeprom_dac_4"><i class="icon-tag"></i> DAC Value (0-4095)</label>
+			<input type="text" id="node-input-eeprom_dac_4">
+		</div>
+	</div>
+
+</script>
+
+<script type="text/x-red" data-help-name="ncd-mcp4728">
+    <h3>I2C Connection</h3>
+	<p>Configure the connection you want to use to communicate to your I2C device. Native I2C and USB to I2C converters are supported.</p>
+	<h3>Device Address</h3>
+	<p>The MCP4728 exposes hardware pins to make it easily addressable, on the NCD version these pins are controlled with jumpers and have the following values:</p>
+	<ul>
+		<li><b>None</b> 32</li>
+		<li><b>A0</b> 33</li>
+		<li><b>A1</b> 34</li>
+		<li><b>A0+A1</b> 35</li>
+		<li><b>A2</b> 36</li>
+		<li><b>A2+A0</b> 37</li>
+		<li><b>A2+A1</b> 38</li>
+		<li><b>All</b> 39</li>
+	</ul>
+	<h3>Interval</h3>
+	<p>The interval defines the time between status checks. It is in milliseconds, and the interval starts after the previous check has finished.</p>
+	<h3>Message on Change</h3>
+	<p>If this option is set, the device will only generate an output message if the status of the inputs or outputs has changed since the last status check or command.</p>
+	<h3>Output on Init</h3>
+	<p>Select this to automatically output the initial state of the board when the node is deployed or redeployed. This includes when node red is started.</p>
+	<h3>Output All Channels</h3>
+	<p>By default this device will have 1 output, which will send a payload anytime it detects a status change on the device (or everyime it recieves a message with a topic of "get_status"). Use this option to enable seperate outputs for each channel.</p>
+	<h3>Channel Direction</h3>
+	<p>Each selected channel will be configured as an output. Any channels left unchecked will be pulled up internally and set as an input.</p>
+	<h3>Persist Device State</h3>
+	<p><b>This setting is only effective if an interval is defined</b></p>
+	<p>This will store the last known good state of the controller locally so if it loses power it can recover. This should be used with care, if you are running on an SD card this can cause more wear.</p>
+	<h3>Startup State</h3>
+	<p><b>This setting is only effective if an interval is defined</b></p>
+	<p>If you are not using Persist Device State, you can set a startup state for the outputs here, this should be an integer as described below in the Input Values section relating to the "all" topic.
+	<h3>Input values</h3>
+	<p>You can send commands to the device through the use of topics and payloads. Any input messages that do not contain a compatible topic will be ignored. The compatible topics are:</p>
+	<ul>
+		<li><b>get_status</b> Forces a status check outside of the normal interval.</li>
+		<li><b>all</b> Allows you to send a single byte to control all channels (see below)</li>
+		<li><b>channel_(n)</b> Addresses a specific channel (1-8), and expects a payload of 0 or 1 to turn the output off or on, respectively.</li>
+	</ul>
+	<i>When sending a single byte to control all channels, the LSB will control channel 1 and the MSB will control channel 8. Set bits turn the output on, unset bits turn the output off. 00000001 = channel 1, 10000000 = channel 8, you can get the correct value by running this in your JS console <code>parseInt("10100000", 2);</code>. </i>
+	<h3>Output Values</h3>
+	<p>When Output All Channels is selected, each output represents a channel, the topic will indicate the channel (channel_(n)), and the payload will be 1 or 0</p>
+	<p>The last output on the node (the only output if Output All Channels is not selected) will send an object as the payload keyed by the channel, with a 1 or 0 defining the status. A status of 1 on an output indicates that it is active, a status of 1 on an input means it is being pulled to ground.</p>
+	<p>i.e.:<br />
+	{<br/>
+		channel_1:1,<br/>
+		channel_2:0,<br/>
+		channel_3:0,<br/>
+		channel_4:0,<br/>
+		channel_5:1,<br/>
+		channel_6:1,<br/>
+		channel_7:0,<br/>
+		channel_8:0<br/>
+		}</p>
+
+</script>
