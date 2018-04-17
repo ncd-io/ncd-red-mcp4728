@@ -1,4 +1,4 @@
-module.exports = class MCP4725{
+module.exports = class MCP4728{
 	constructor(addr, comm, config){
 		if(typeof config != 'object') config = {};
 		this.config = Object.assign({
@@ -44,7 +44,7 @@ module.exports = class MCP4725{
 		}, config);
 		for(var i=1;i<5;i++){
 			if(this.config["eeprom_persist_"+i]) this.config.startup = false;
-			if(this.config["vr_"+i]) this.config["gx_"+i] = 0;
+			if(!this.config["vr_"+i]) this.config["gx_"+i] = 0;
 			if(this.config["eeprom_vr_"+i]) this.config["eeprom_gx_"+i] = 0;
 		}
 		this.comm = comm;

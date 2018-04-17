@@ -21,7 +21,6 @@ module.exports = function(RED){
 			//Redeployment
 			delete(sensor_pool[this.id]);
 		}
-
 		this.sensor = new MCP4728(this.addr, RED.nodes.getNode(config.connection).i2c, config);
 		sensor_pool[this.id] = {
 			sensor: this.sensor,
