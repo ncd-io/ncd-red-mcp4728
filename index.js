@@ -131,38 +131,34 @@ module.exports = class MCP4728{
 		var _dac = this;
 		return new Promise((fulfill, reject) => {
 			var reg = 64;
-			var promises = [];
-			if(dac < 1){
-				var cmd = reg;
-				for(var i=0;i<4;i++){
-					promises.push(_dac.set(i+1, val, true));
-				}
-			}else if(dac < 5){
+			if(dac < 5 && dac > 0){
 				reg |= ((dac - 1) << 1);
 				if(this.config["eeprom_persist_"+dac]) reg |= 24;
 				var bytes = _dac.buildCommand(this.config["vr_"+dac], this.config["pd_"+dac], this.config["gx_"+dac], val);
-				promises.push(_dac.comm.writeBytes(_dac.addr, reg, ...bytes));
-			}else{
-				reject('Invalid DAC channel: '+dac);
-				return;
-			}
-			Promise.all(promises).then(() => {
-				if(nostat){
-					fulfill();
-					return;
-				}
-				_dac.get().then((status) => {
+				_dac.comm.writeBytes(_dac.addr, reg, ...bytes).then((status) => {
 					_dac.initialized = true;
-					fulfill(status);
+					fulfill();
 				}).catch((err) => {
 					this.initialized = false;
 					reject(err);
 				});
-			}).catch((err) => {
-				this.initialized = false;
-				reject(err);
-			});
+			}else{
+				reject('Invalid DAC channel: '+dac);
+				return;
+			}
 
 		});
+	}
+	setAll(val, eeprom){
+		var reg = 64;
+		var bytes = [this.addr];
+		for(var dac=1;dac<5;dac++){
+			bytes.push(reg | ((dac - 1) << 1));
+			var chb = this.buildCommand(this.config["vr_"+dac], this.config["pd_"+dac], this.config["gx_"+dac], val);
+			bytes.push(chb[0]);
+			bytes.push(chb[1]);
+		}
+		console.log(bytes);
+		return this.comm.writeBytes(...bytes);
 	}
 }

@@ -18,11 +18,16 @@ var config = {
 	rate: 7,
 	mode: 1
 };
-var dac = new MCP4728(0x60, comm);
+var dac = new MCP4728(0x60, comm, {
+	eeprom_persist_1: true,
+	eeprom_persist_2: true,
+	eeprom_persist_3: true,
+	eeprom_persist_4: true,
+});
 
 function testSet(){
 	var rand = Math.floor(Math.random() * 4096);
-	dac.set(0, rand).then((r) => {
+	dac.setAll(rand, true).then((r) => {
 		console.log(rand);
 		setTimeout(testGet, 500);
 	}).catch(console.log);

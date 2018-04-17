@@ -40,6 +40,7 @@ module.exports = function(RED){
 
 		function send_payload(_status, force){
 			if(!force && JSON.stringify(_status) == last_status) return;
+			console.log(_status);
 			var msg = [],
 				dev_status = {topic: 'device_status', payload: {
 					channel_1: _status.channel_1.dac,
@@ -86,12 +87,17 @@ module.exports = function(RED){
 			clearTimeout(sensor_pool[node.id].timeout);
 			if(msg.topic != 'get_status'){
 				if(typeof node.sensor.settable != 'undefined' && node.sensor.settable.indexOf(msg.topic) > -1){
-					var topic = msg.topic == "all" ? 0 : msg.topic.substr(-1)*1;
-					node.sensor.set(topic, msg.payload).then().catch((err) => {
-						console.log(err);
-					}).then(() => {
-						get_status(true)
-					});
+					if(msg.topic.toLowerCase() == "all"){
+						node.sensor.setAll(msg.payload).then().catch(console.log).then(() => {
+							get_status(true);
+						});
+					}else{
+						node.sensor.set(msg.topic.substr(-1)*1, msg.payload).then().catch((err) => {
+							console.log(err);
+						}).then(() => {
+							get_status(true);
+						});
+					}
 				}
 			}else{
 				get_status(true);
