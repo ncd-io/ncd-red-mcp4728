@@ -3,10 +3,6 @@
 const MCP4728 = require("./index.js");
 const comm = require("ncd-red-comm");
 
-process.on('unhandledRejection', error => {
-  console.log('unhandledRejection', error);
-});
-
 
 module.exports = function(RED){
 	var sensor_pool = {};
@@ -40,7 +36,6 @@ module.exports = function(RED){
 
 		function send_payload(_status, force){
 			if(!force && JSON.stringify(_status) == last_status) return;
-			console.log(_status);
 			var msg = [],
 				dev_status = {topic: 'device_status', payload: {
 					channel_1: _status.channel_1.dac,

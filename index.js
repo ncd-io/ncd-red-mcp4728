@@ -158,7 +158,6 @@ module.exports = class MCP4728{
 			bytes.push(chb[0]);
 			bytes.push(chb[1]);
 		}
-		console.log(bytes);
 		return this.comm.writeBytes(...bytes);
 	}
 }
